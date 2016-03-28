@@ -10,7 +10,7 @@ The Assembling process is implemented in two passes. The first pass scans the wh
 
 Source code is organized into several components, the decisions for their names, interfaces and APIs were already specified in the book as sort of an specification-implementation contract. All components of the Assembler reside in the */Assembler* directory, as follows:
 
-  1. **Assebmler.py**: Main module. Implements the two passes and glues the other components together.
+  1. **Assembler.py**: Main module. Implements the two passes and glues the other components together.
   2. **Parser.py**: Simple Parser. Parses the instructions by looking ahead 1 or 2 characters to determine their types and structures.
   3. **Lex.py**: A simple Lexer which is used by the Parser to break an instruction to smaller parts and sturcture it in a way that makes it easy to convert it to machine code.
   4. **Code.py**: Generates binary machine code for instructions. For C-Instructions, it generates machine code for its constituting parts and then merges them back altogether.
