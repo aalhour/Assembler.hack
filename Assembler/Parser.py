@@ -16,7 +16,7 @@ class Parser:
     L_INSTRUCTION = 2   # Label declaration pseudo-instruction.
 
     def __init__(self, file):
-        self.lex = Lex.Lex(file)
+        self.lexer = Lex.Lex(file)
         self._init_instruction_info()
 
     def _init_instruction_info(self):
@@ -32,12 +32,12 @@ class Parser:
     # @symbol or @number
     def _a_instruction(self):
         self._instruction_type = Parser.A_INSTRUCTION
-        tok_type, self._symbol = self.lex.next_token()
+        tok_type, self._symbol = self.lexer.next_token()
 
     # (symbol)
     def _l_instruction(self):
         self._instruction_type = Parser.L_INSTRUCTION
-        tok_type, self._symbol = self.lex.next_token()
+        tok_type, self._symbol = self.lexer.next_token()
 
     def _c_instruction(self, token, value):
         """
@@ -57,11 +57,11 @@ class Parser:
         Gets the 'dest' part of the instruction, if any.
         :return: First token of the 'comp' part.
         """
-        tok2, val2 = self.lex.peek_token()
+        tok2, val2 = self.lexer.peek_token()
         if tok2 == Lex.OPERATION and val2 == '=':
-            self.lex.next_token()
+            self.lexer.next_token()
             self._dest = value
-            comp_tok, comp_val = self.lex.next_token()
+            comp_tok, comp_val = self.lexer.next_token()
         else:
             comp_tok, comp_val = token, value
         return comp_tok, comp_val
@@ -71,21 +71,21 @@ class Parser:
         Gets the 'comp' part of the instruction (mandatory).
         """
         if token == Lex.OPERATION and (value == '-' or value == '!'):
-            tok2, val2 = self.lex.next_token()
+            tok2, val2 = self.lexer.next_token()
             self._comp = value + val2
         elif token == Lex.NUMBER or token == Lex.SYMBOL:
             self._comp = value
-            tok2, val2 = self.lex.peek_token()
+            tok2, val2 = self.lexer.peek_token()
             if tok2 == Lex.OPERATION and val2 != ';':
-                self.lex.next_token()
-                tok3, val3 = self.lex.next_token()
+                self.lexer.next_token()
+                tok3, val3 = self.lexer.next_token()
                 self._comp += val2+val3
 
     # Get the 'jump' part if any
     def _get_jump(self):
-        token, value = self.lex.next_token()
+        token, value = self.lexer.next_token()
         if token == Lex.OPERATION and value == ';':
-            jump_tok, jump_val = self.lex.next_token()
+            jump_tok, jump_val = self.lexer.next_token()
             self._jmp = jump_val
 
     @property
@@ -124,7 +124,7 @@ class Parser:
         return self._jmp
 
     def has_more_instructions(self):
-        return self.lex.has_more_instructions()
+        return self.lexer.has_more_instructions()
 
     def advance(self):
         """
@@ -132,8 +132,8 @@ class Parser:
         """
         self._init_instruction_info()
 
-        self.lex.next_instruction()
-        token, val = self.lex.curr_token
+        self.lexer.next_instruction()
+        token, val = self.lexer.curr_token
 
         if token == Lex.OPERATION and val == '@':
             self._a_instruction()

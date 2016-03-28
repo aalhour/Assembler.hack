@@ -35,7 +35,7 @@ class Lex(object):
         self._lines = file.read()
         self._tokens = self._tokenize(self._lines.split('\n'))
         # List of tokens for current instruction
-        self.curr_cmd_tokens = []
+        self.curr_instr_tokens = []
         # Current token of current instruction
         self.curr_token = (ERROR, 0)
 
@@ -77,23 +77,23 @@ class Lex(object):
         return self._tokens != []
 
     def next_instruction(self):
-        self.curr_cmd_tokens = self._tokens.pop(0)
+        self.curr_instr_tokens = self._tokens.pop(0)
         self.next_token()
-        return self.curr_cmd_tokens
+        return self.curr_instr_tokens
 
     def has_next_token(self):
-        return self.curr_cmd_tokens != []
+        return self.curr_instr_tokens != []
 
     def next_token(self):
         if self.has_next_token():
-            self.curr_token = self.curr_cmd_tokens.pop(0)
+            self.curr_token = self.curr_instr_tokens.pop(0)
         else:
             self.curr_token = ERROR, 0
         return self.curr_token
 
     def peek_token(self):
         if self.has_next_token():
-            return self.curr_cmd_tokens[0]
+            return self.curr_instr_tokens[0]
         else:
             return ERROR, 0
 

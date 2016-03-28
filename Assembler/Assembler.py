@@ -6,7 +6,7 @@ from Assembler import Parser
 from Assembler import SymbolTable
 
 
-class Assembler(object):
+class Assembler:
     """
     Reads Progam.asm source file and creates a new file Program.hack which has the assembled machine code as a text file.
 
@@ -15,7 +15,7 @@ class Assembler(object):
     respective addresses in the symbol table, in addition to generating binary machine code and writing the resulting
     assembled machine code to a new file.
 
-    Usage: ./Assembler.py Program.asm
+    Usage: python Assembler.py Program.asm
     """
     def __init__(self):
         self.symbol_address = 16
@@ -95,7 +95,7 @@ class Assembler(object):
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print("Usage: ./Assembler.py Program.asm")
+        print("Usage: python Assembler.py Program.asm")
     else:
         asm_file = sys.argv[1]
 
