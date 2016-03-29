@@ -6,9 +6,9 @@ Assembler.hack is a 16-bit machine language assembler for the 16-bit Hack Assemb
 
 Assembler.hack takes a program source code file written in the Hack Assembly Language (see: intro section below), which is a *.asm* text file, and then assembles it into binary machine code (Hack Machine Language). The assembled machine code program is then written to a new *.hack* text file with the same name.
 
-The Assembling process is implemented in two passes. The first pass scans the whole program, registering the symbols (variables and labels) in the symbol table. The second pass scans the whole program again, substituting the symbols with their respective memory addresses in the symbol table, generating binary machine code and writing the assembled machine code to a new file text file with the *.hack* file extenion.
+The Assembling process is implemented in two passes. The first pass scans the whole program, registering the labels only in the Symbol Table. The second pass scans the whole program again, registering all variables in the Symbol Table, substituting the symbols with their respective memory and/or instruction addresses from the Symbol Table, generating binary machine code and then writing the assembled machine code to the new *.hack* text file.
 
-Source code is organized into several components, the decisions for their names, interfaces and APIs were already specified in the book as sort of an specification-implementation contract. All components of the Assembler reside in the */Assembler* directory, as follows:
+Source code is organized into several components, the decisions for their names, interfaces and APIs were already specified in the book as sort of a specification-implementation contract. All components of the Assembler reside in the **/Assembler** directory, as follows:
 
   1. **Assembler.py**: Main module. Implements the two passes and glues the other components together.
   2. **Parser.py**: Simple Parser. Parses the instructions by looking ahead 1 or 2 characters to determine their types and structures.
@@ -19,7 +19,7 @@ Source code is organized into several components, the decisions for their names,
 #### How to Use:
 
 ```bash
-$ ./Assembler.py HelloWorld.asm
+$ python Assembler.py HelloWorld.asm
 ```
 
 ## REQUIREMENTS
@@ -35,6 +35,7 @@ $ ./Assembler.py HelloWorld.asm
 ```x86
 // Given two numbers stored in the registers R0 and R1,
 // compute the maximum between them and store it in the R2 register.
+
   @R0
   D=M              // D = first number
   @R1
@@ -82,7 +83,7 @@ $ ./Assembler.py HelloWorld.asm
 
 ## INTRO TO THE HACK ASSEMBLY LANGUAGE
 
-The Hack Assembly Language is minimal, it mainly consists of 2 types of instructions. It ignores whitespace and allows programs to declare symbols with a single symbol declaration instruction. Symbols can either be labels or variables. It also allows the programmer to write comments in the source code, for example: `// this is a single line comment`.
+The Hack Assembly Language is minimal, it mainly consists of 3 types of instructions. It ignores whitespace and allows programs to declare symbols with a single symbol declaration instruction. Symbols can either be labels or variables. It also allows the programmer to write comments in the source code, for example: `// this is a single line comment`.
 
 If you cannot contain your excitement then head over to the [tests](tests/) directory and check out the testing programs, **.asm** files contain programs written in the Hack Assembly Language, and **.hack** files contain their equivalent binary machine code programs (Hack Machine Language).
 
@@ -102,8 +103,9 @@ If you cannot contain your excitement then head over to the [tests](tests/) dire
 
 ### Types of Instructions:
 
-  1. A-Instructions: Addressing instructions.
-  2. C-Instructions: Computation instructions.
+  1. A-Instruction: Addressing instructions.
+  2. C-Instruction: Computation instructions.
+  3. L-Instruction: Labels (Symbols) declaration instructions.
 
 #### A-INSTRUCTIONS:
 
@@ -129,6 +131,40 @@ Examples:
 ##### Effects:
 
 Sets the contents of the **A** register to the specified value. The value is either a non-negative number (i.e. 21) or a Symbol. If the value is a Symbol, then the contents of the **A** register is set to the value that the Symbol refers to but not the actual data in that Register or Memory Location.
+
+#### L-INSTRUCTIONS:
+
+Symbols can be either variables or lables. Variables are symbolic names for memory addresses to make remembering these addresses easier. Labels are instructions addresses that allow multiple jumps in the program easier to handle. Symbols declaration is not a machine instruction because machine code doesn't operate on the level of abstraction of that of labels and variables, and hence it is considered a pseudo-instruction.
+
+##### Declaring Variables:
+
+Declaring variables is a straight forward A-Instruction, example:
+
+```
+@i
+M=0
+```
+
+The instruction `@i` declares a variable "i", and the instruction `M=0` sets the memory location of "i" in Main Memory to 0, the address "i" was automatically generated and stored in **A** Register by the instruction.
+
+##### Declaring Labels:
+
+To declare a label we need to use the command `(LABEL_NAME)`, where "LABEL_NAME" can be any name we desire to have for the label, as long as it's wraped between parentheses. For example:
+
+```
+(LOOP)
+  // ...
+  // instruction 1
+  // instruction 2
+  // instruction 3
+  // ...
+  @LOOP
+  0;JMP
+```
+
+The instruction `(LOOP)` declares a new label called "LOOP", the assembler will resolve this label to the address of the next instruction (A or C instruction) on the following line.
+
+The instruction `@LOOP` is a straight-forward A-Instruction that sets the contents of **A** Register to the instruction address the label refers to, whereas the `0;JMP` instruction causes an unconditional jump to the address in **A** Register causing the program to execute the set of instructions between `(LOOP)` and `0;JMP` infinitely.
 
 #### C-INSTRUCTIONS:
 
