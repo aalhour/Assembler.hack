@@ -4,7 +4,7 @@ Assembler.hack is a 16-bit machine language assembler for the 16-bit Hack Assemb
 
 ## DESCRIPTION
 
-Assembler.hack takes a program source code file written in the Hack Assembly Language (see: [Intro to Hack Assembly Lang.](#INTRO-TO-THE-HACK-ASSEMBLY-LANGUAGE) below), which is a *.asm* text file, and then assembles it into binary machine code (Hack Machine Language). The assembled machine code program is then written to a new *.hack* text file with the same name.
+Assembler.hack takes a program source code file written in the Hack Assembly Language (see: intro section below), which is a *.asm* text file, and then assembles it into binary machine code (Hack Machine Language). The assembled machine code program is then written to a new *.hack* text file with the same name.
 
 The Assembling process is implemented in two passes. The first pass scans the whole program, registering the symbols (variables and labels) in the symbol table. The second pass scans the whole program again, substituting the symbols with their respective memory addresses in the symbol table, generating binary machine code and writing the assembled machine code to a new file text file with the *.hack* file extenion.
 
