@@ -1,9 +1,9 @@
-#!/usr/local/bin/python3
+#!/usr/bin/env python3
 
 import sys
-from Assembler import Code
-from Assembler import Parser
-from Assembler import SymbolTable
+import Code
+import Parser
+import SymbolTable
 
 
 class Assembler:

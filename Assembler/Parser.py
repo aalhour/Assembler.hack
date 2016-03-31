@@ -1,6 +1,6 @@
-#!/usr/local/bin/python3
+#!/usr/bin/env python3
 
-from Assembler import Lex
+import Lex
 
 
 class Parser:
@@ -11,9 +11,11 @@ class Parser:
     TODO: Validate the program rules for invalid instructions.
     TODO: A descent parsing algorithm, i.e. recursive-descent parsing.
     """
-    A_INSTRUCTION = 0   # A instruction.
-    C_INSTRUCTION = 1   # C instruction.
-    L_INSTRUCTION = 2   # Label declaration pseudo-instruction.
+    ###
+    # Types of Instructions as integer constants
+    A_INSTRUCTION = 0   # Addressing Instruction.
+    C_INSTRUCTION = 1   # Computation Instruction.
+    L_INSTRUCTION = 2   # Label-Declaration pseudo-Instruction.
 
     def __init__(self, file):
         self.lexer = Lex.Lex(file)
@@ -29,23 +31,31 @@ class Parser:
         self._comp = ''
         self._jmp = ''
 
-    # @symbol or @number
     def _a_instruction(self):
+        """
+        Addressing Instruction. Possible structures:
+          * @number, examples: @21, @256
+          * @symbol, examples: @i, @n, @LOOP, @END; where i, n could be variables, where LOOP and END could be labels
+                               previously declared with an L-Instruction.
+        """
         self._instruction_type = Parser.A_INSTRUCTION
         tok_type, self._symbol = self.lexer.next_token()
 
-    # (symbol)
     def _l_instruction(self):
+        """
+        Symbol Declaration instruction. Symbolic syntax: (LABEL_NAME), where LABEL_NAME is any desired name for the
+        label. Example: (LOOP), (END).
+        """
         self._instruction_type = Parser.L_INSTRUCTION
         tok_type, self._symbol = self.lexer.next_token()
 
     def _c_instruction(self, token, value):
         """
         Computation instruction. Possible structures:
-          * dest=comp;jump
-          * dest=comp         omitting jump
-          * comp;jump         omitting dest
-          * comp              omitting dest and jump
+          * dest=comp;jump      the full c-instruction case
+          * dest=comp           c-instruction with no JUMP part
+          * comp;jump           c-instruction with no DEST part
+          * comp                c-instruction with only a COMP part
         """
         self._instruction_type = Parser.C_INSTRUCTION
         comp_tok, comp_val = self._get_dest(token, value)
@@ -81,8 +91,10 @@ class Parser:
                 tok3, val3 = self.lexer.next_token()
                 self._comp += val2+val3
 
-    # Get the 'jump' part if any
     def _get_jump(self):
+        """
+        Gets the 'jump' part of the instruction, if exists.
+        """
         token, value = self.lexer.next_token()
         if token == Lex.OPERATION and value == ';':
             jump_tok, jump_val = self.lexer.next_token()
