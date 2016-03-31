@@ -200,6 +200,8 @@ Performs a computation on the CPU (arithmetic or bit-wise logic) and stores it i
 
 ![C-Instructions Reference](assets/c_instructions_reference.png "C-Instructions Reference")
 
+*This C-Instruction reference image is taken from the [nand2tetris Coursera MOOC](https://www.coursera.org/learn/build-a-computer).*
+
 ## LICENSE
 
 This project is licensed under the [MIT License](LICENSE).
