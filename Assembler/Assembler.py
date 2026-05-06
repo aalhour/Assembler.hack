@@ -28,10 +28,9 @@ class Assembler:
         :param asm_file: Program source code file written in Hack Assembly Language.
         :return: String.
         """
-        if asm_file.endswith('.asm'):
-            return asm_file.replace('.asm', '.hack')
-        else:
-            return asm_file + '.hack'
+        if not asm_file.endswith('.asm'):
+            raise ValueError("Input file must end with .asm: {}".format(asm_file))
+        return asm_file[:-len('.asm')] + '.hack'
 
     def _get_address(self, symbol):
         """
@@ -96,9 +95,9 @@ class Assembler:
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: python Assembler.py Program.asm")
-    else:
-        asm_file = sys.argv[1]
+        sys.exit(1)
 
+    asm_file = sys.argv[1]
     hack_assembler = Assembler()
     hack_assembler.assemble(asm_file)
 
